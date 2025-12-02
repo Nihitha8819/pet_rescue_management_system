@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Rescue & Adoption Portal</title>
+  <link rel="stylesheet" href="pet-UI.css">
+</head>
+<body>
+
+  <section id="landing" class="active-section">
+    <header>
+      <h1>Pet Rescue & Adoption Portal</h1>
+    </header>
+    <div class="container">
+      <button onclick="showSection('login')">Login</button>
+      <button onclick="showSection('register')">Register</button>
+    </div>
+  </section>
+
+  <section id="login">
+    <div class="form-container">
+      <h2>Login</h2>
+      <form onsubmit="showSection('dashboard'); return false;">
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="#" onclick="showSection('register')">Register</a></p>
+    </div>
+  </section>
+
+  <section id="register">
+    <div class="form-container">
+      <h2>Register</h2>
+      <form onsubmit="showSection('login'); return false;">
+        <input type="text" placeholder="Full Name" required>
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Create Password" required>
+        <button type="submit">Register</button>
+      </form>
+      <p>Already have an account? <a href="#" onclick="showSection('login')">Login</a></p>
+    </div>
+  </section>
+
+  <section id="dashboard">
+    <header>
+      <h2>pet rescue Portal</h2>
+    </header>
+    <div class="container">
+      <button onclick="showSection('report')">Report</button>
+      <button onclick="showSection('landing')">Logout</button>
+    </div>
+  </section>
+
+  <section id="report">
+    <div class="form-container">
+      <h2>Report Lost / Found Pet</h2>
+      <form onsubmit="alert('Report submitted!'); showSection('dashboard'); return false;">
+        <select required>
+          <option value="">Select Report Type</option>
+          <option>Lost</option>
+          <option>Found</option>
+        </select>
+        <input type="text" placeholder="Pet Name" required>
+        <input type="text" placeholder="Pet Type" required>
+        <textarea placeholder="Description"></textarea>
+        <input type="text" placeholder="Last Seen Location" required>
+        <button type="submit">Submit Report</button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    function showSection(id){
+      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active-section'));
+      document.getElementById(id).classList.add('active-section');
+      window.scrollTo(0,0);
+    }
+  </script>
+
+</body>
+</html>
