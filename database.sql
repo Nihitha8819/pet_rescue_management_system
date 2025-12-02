@@ -5,6 +5,7 @@ CREATE DATABASE IF NOT EXISTS pet_rescue
 
 USE pet_rescue;
 
+--Table for users
 CREATE TABLE roles (
     role_id     INT AUTO_INCREMENT PRIMARY KEY,
     name        VARCHAR(30) NOT NULL UNIQUE  -- e.g., 'USER', 'ADMIN'
@@ -12,11 +13,13 @@ CREATE TABLE roles (
  
 INSERT INTO roles (name) VALUES ('USER'), ('ADMIN');
 
+--Table for prt species
 CREATE TABLE pet_species (
     species_id  INT AUTO_INCREMENT PRIMARY KEY,
     name        VARCHAR(50) NOT NULL UNIQUE   -- e.g., 'Dog', 'Cat'
 );
 
+--Table for pet breeds
 CREATE TABLE pet_breeds (
     breed_id    INT AUTO_INCREMENT PRIMARY KEY,
     species_id  INT NOT NULL,
@@ -25,6 +28,7 @@ CREATE TABLE pet_breeds (
         FOREIGN KEY (species_id) REFERENCES pet_species(species_id)
 );
 
+--Table to report_status (if the pet if found/not found)
 CREATE TABLE report_status (
     status_id   INT AUTO_INCREMENT PRIMARY KEY,
     name        VARCHAR(30) NOT NULL UNIQUE  -- e.g., 'OPEN', 'MATCHED', 'CLOSED', 'REJECTED'
@@ -33,6 +37,7 @@ CREATE TABLE report_status (
 INSERT INTO report_status (name)
 VALUES ('OPEN'), ('MATCHED'), ('CLOSED'), ('REJECTED');
 
+--Table for users 
 CREATE TABLE users (
     user_id         INT AUTO_INCREMENT PRIMARY KEY,
     role_id         INT NOT NULL,                -- FK to roles
@@ -56,6 +61,7 @@ CREATE TABLE users (
         FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
 
+--Table fot pets
 CREATE TABLE pets (
     pet_id          INT AUTO_INCREMENT PRIMARY KEY,
     owner_id        INT NULL,                    -- FK to users; NULL for stray/found pets
@@ -88,6 +94,7 @@ CREATE TABLE pets (
         FOREIGN KEY (breed_id) REFERENCES pet_breeds(breed_id)
 );
 
+--Table for pet photos
 CREATE TABLE pet_photos (
     photo_id    INT AUTO_INCREMENT PRIMARY KEY,
     pet_id      INT NOT NULL,
@@ -100,6 +107,7 @@ CREATE TABLE pet_photos (
         ON DELETE CASCADE
 );
 
+--Tble for prt_reports
 CREATE TABLE pet_reports (
     report_id       INT AUTO_INCREMENT PRIMARY KEY,
     pet_id          INT NULL,              -- link to pets table if we have/created a pet record
