@@ -64,7 +64,7 @@ class PetReport(models.Model):
     description = models.TextField()
     location_found = models.CharField(max_length=255)
     contact_info = models.CharField(max_length=255)
-    image_url = models.URLField(max_length=500, blank=True)
+    images = models.JSONField(default=list, blank=True)  # Store up to 10 image paths
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pet_reports')
     created_at = models.DateTimeField(auto_now_add=True)

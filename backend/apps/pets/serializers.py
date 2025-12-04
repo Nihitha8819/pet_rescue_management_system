@@ -29,6 +29,13 @@ class PetReportSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']
 
 class PetReportCreateSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(
+        child=serializers.CharField(max_length=1000),
+        required=False,
+        allow_empty=True,
+        max_length=10
+    )
+    
     class Meta:
         model = PetReport
-        fields = ['pet_name', 'pet_type', 'description', 'location_found', 'contact_info', 'image_url']
+        fields = ['pet_name', 'pet_type', 'description', 'location_found', 'contact_info', 'images']

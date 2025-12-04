@@ -14,8 +14,9 @@ const ReportPet = () => {
     description: '',
     location_found: '',
     contact_info: '',
-    image_url: '',
   });
+  const [images, setImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -27,6 +28,33 @@ const ReportPet = () => {
     });
   };
 
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    
+    if (files.length + images.length > 10) {
+      setError('You can only upload up to 10 images');
+      return;
+    }
+    
+    setImages([...images, ...files]);
+    
+    // Create preview URLs
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    setImagePreviews([...imagePreviews, ...newPreviews]);
+    setError('');
+  };
+
+  const removeImage = (index) => {
+    const newImages = images.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+    
+    // Revoke the object URL to free memory
+    URL.revokeObjectURL(imagePreviews[index]);
+    
+    setImages(newImages);
+    setImagePreviews(newPreviews);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -34,23 +62,41 @@ const ReportPet = () => {
     setLoading(true);
 
     try {
+      // Create FormData for file upload
+      const submitData = new FormData();
+      submitData.append('pet_name', formData.pet_name);
+      submitData.append('pet_type', formData.pet_type);
+      submitData.append('description', formData.description);
+      submitData.append('location_found', formData.location_found);
+      submitData.append('contact_info', formData.contact_info);
+      
+      // Add images
+      images.forEach((image, index) => {
+        submitData.append(`images[${index}]`, image);
+      });
+
       const response = await axios.post(
         `${API_URL}/pets/report/create/`,
-        formData,
+        submitData,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
 
       setSuccess('Pet report submitted successfully! Our team will review it soon.');
+      
+      // Clean up preview URLs
+      imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+      
       setTimeout(() => {
         navigate('/dashboard');
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to submit report. Please try again.');
+      console.error('Submit error:', err);
+      setError(err.response?.data?.error || err.response?.data?.detail || 'Failed to submit report. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -167,21 +213,49 @@ const ReportPet = () => {
           </div>
 
           <div>
-            <label htmlFor="image_url" className="block text-sm font-medium text-gray-700 mb-1">
-              Image URL (optional)
+            <label htmlFor="images" className="block text-sm font-medium text-gray-700 mb-1">
+              Pet Images (up to 10 photos)
             </label>
             <input
-              type="url"
-              id="image_url"
-              name="image_url"
+              type="file"
+              id="images"
+              name="images"
+              multiple
+              accept="image/*"
+              onChange={handleImageChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="https://example.com/pet-image.jpg"
-              value={formData.image_url}
-              onChange={handleChange}
             />
             <p className="mt-1 text-sm text-gray-500">
-              Provide a direct URL to the pet's image
+              Upload up to 10 images of the pet ({images.length}/10 selected)
             </p>
+            
+            {/* Image Previews */}
+            {imagePreviews.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {imagePreviews.map((preview, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={preview}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg border-2 border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Remove image"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                    <span className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                      {index + 1}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex gap-4">
