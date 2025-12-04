@@ -81,7 +81,7 @@ const ReportPet = () => {
         {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
+            // Don't set Content-Type manually - axios will set it with boundary for FormData
           },
         }
       );

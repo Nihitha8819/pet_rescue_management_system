@@ -10,10 +10,17 @@ const apiClient = axios.create({
 // Interceptors for handling JWT token
 apiClient.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('access_token');
+        // Try both token storage keys for compatibility
+        const token = localStorage.getItem('token') || localStorage.getItem('access_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        
+        // Don't set Content-Type for FormData - let axios set it with boundary
+        if (config.data instanceof FormData) {
+            delete config.headers['Content-Type'];
+        }
+        
         return config;
     },
     (error) => {
@@ -25,12 +32,42 @@ apiClient.interceptors.response.use(
     (response) => {
         return response;
     },
-    (error) => {
-        if (error.response && error.response.status === 401) {
+    async (error) => {
+        const originalRequest = error.config;
+        
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            
+            try {
+                const refreshToken = localStorage.getItem('refresh_token');
+                if (refreshToken) {
+                    const response = await axios.post(
+                        `${process.env.REACT_APP_API_URL || 'http://localhost:8000/api'}/auth/token/refresh/`,
+                        { refresh: refreshToken }
+                    );
+                    
+                    const { access } = response.data;
+                    localStorage.setItem('token', access);
+                    localStorage.setItem('access_token', access);
+                    
+                    originalRequest.headers.Authorization = `Bearer ${access}`;
+                    return apiClient(originalRequest);
+                }
+            } catch (refreshError) {
+                console.error('Token refresh failed:', refreshError);
+            }
+        }
+        
+        if (error.response?.status === 401) {
             // Handle unauthorized access
             console.error('Unauthorized access - redirecting to login');
-            // Optionally, you can redirect to login or show a notification
+            localStorage.removeItem('token');
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
         }
+        
         return Promise.reject(error);
     }
 );
