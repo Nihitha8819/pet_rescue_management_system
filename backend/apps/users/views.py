@@ -12,15 +12,22 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'user': UserSerializer(user).data,
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'user': UserSerializer(user).data,
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            # Return a safe, debuggable error payload instead of a 500
+            return Response({
+                'error': 'Signup failed',
+                'detail': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(generics.GenericAPIView):
     """POST /auth/login - Authenticate user"""
@@ -35,10 +42,11 @@ class LoginView(generics.GenericAPIView):
                 {'error': 'Email and password are required'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-        user = authenticate(request, username=email, password=password)
-        
-        if user is None:
+        # Manually authenticate by email to avoid backend inconsistencies
+        # Use filter().first() to tolerate accidental duplicates in Mongo
+        # Prefer the most recently created user if duplicates exist
+        user = User.objects.filter(email=email).order_by('-created_at').first()
+        if not user or not user.check_password(password):
             return Response(
                 {'error': 'Invalid credentials'},
                 status=status.HTTP_401_UNAUTHORIZED

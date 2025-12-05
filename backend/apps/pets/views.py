@@ -124,8 +124,14 @@ class PetReportCreateView(generics.CreateAPIView):
                     except Exception as e:
                         print(f"Error processing image {idx}: {str(e)}")
         
-        # Create mutable copy of request data
-        data = request.data.copy()
+        # Create mutable copy of request data, excluding images from file upload
+        data = {}
+        for key, value in request.data.items():
+            # Skip images[] keys - we've already processed them
+            if not key.startswith('images['):
+                data[key] = value
+        
+        # Add processed image paths
         data['images'] = image_paths
         
         serializer = self.get_serializer(data=data)

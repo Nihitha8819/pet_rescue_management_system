@@ -32,36 +32,6 @@ INSTALLED_APPS = [
     'apps.admin_panel',
 ]
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
-ROOT_URLCONF = 'petrescue_backend.urls'
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = 'petrescue_backend.wsgi.application'
 
 # MongoDB Database Configuration using djongo
 DATABASES = {
@@ -70,8 +40,12 @@ DATABASES = {
         'NAME': os.getenv('MONGO_DB_NAME', 'petrescue'),
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': os.getenv('MONGO_URI', 'mongodb://localhost:27017/petrescue')
-        }
+            'host': os.getenv('MONGO_URI', 'mongodb+srv://Nihitha_8819:Nihitha8819@cluster0.gqrxdoe.mongodb.net/petrescue?retryWrites=true&w=majority'),
+            'maxPoolSize': 100, # Add a connection pool
+        },
+        # Keep DB connections open to avoid MongoClient being closed between requests
+        'CONN_MAX_AGE': None,
+        'CONN_HEALTH_CHECKS': True,
     }
 }
 
@@ -114,6 +88,41 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Middleware configuration (required for admin and sessions)
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# Templates configuration (required for admin)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+# URL Configuration
+ROOT_URLCONF = 'petrescue_backend.urls'
+
+# WSGI Application
+WSGI_APPLICATION = 'petrescue_backend.wsgi.application'
+
 # Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -121,6 +130,27 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # File upload settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+
+# Logging configuration for debugging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+        },
+        'apps': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -137,6 +167,8 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
+    'USER_ID_FIELD': '_id',  # Use _id instead of id for MongoDB
+    'USER_ID_CLAIM': 'user_id',
 }
 
 AUTH_USER_MODEL = 'users.User'

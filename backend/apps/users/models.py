@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from bson import ObjectId
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -29,7 +30,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('admin', 'Admin'),
     )
 
-    _id = models.AutoField(primary_key=True, db_column='_id')
+    _id = models.CharField(max_length=24, primary_key=True, db_column='_id')
     name = models.CharField(max_length=255, default='')
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15, blank=True, default='')
@@ -49,3 +50,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     def id(self):
         """Return _id as id for compatibility with JWT and Django"""
         return self._id
+    
+    def save(self, *args, **kwargs):
+        """Generate ObjectId if _id is not set"""
+        if not self._id:
+            self._id = str(ObjectId())
+        super().save(*args, **kwargs)

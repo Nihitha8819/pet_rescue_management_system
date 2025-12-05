@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from bson import ObjectId
 
 User = get_user_model()
 
@@ -16,7 +17,7 @@ class Pet(models.Model):
         ('large', 'Large'),
     ]
 
-    _id = models.AutoField(primary_key=True, db_column='_id')
+    _id = models.CharField(max_length=24, primary_key=True, db_column='_id')
     name = models.CharField(max_length=100)
     pet_type = models.CharField(max_length=10, choices=PET_TYPE_CHOICES)
     breed = models.CharField(max_length=100)
@@ -36,6 +37,12 @@ class Pet(models.Model):
     def id(self):
         """Return _id as id for compatibility"""
         return self._id
+
+    def save(self, *args, **kwargs):
+        """Generate ObjectId if _id is not set"""
+        if not self._id:
+            self._id = str(ObjectId())
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -58,7 +65,7 @@ class PetReport(models.Model):
         ('other', 'Other'),
     ]
 
-    _id = models.AutoField(primary_key=True, db_column='_id')
+    _id = models.CharField(max_length=24, primary_key=True, db_column='_id')
     pet_name = models.CharField(max_length=100)
     pet_type = models.CharField(max_length=20, choices=PET_TYPE_CHOICES)
     description = models.TextField()
@@ -74,6 +81,12 @@ class PetReport(models.Model):
     def id(self):
         """Return _id as id for compatibility"""
         return self._id
+
+    def save(self, *args, **kwargs):
+        """Generate ObjectId if _id is not set"""
+        if not self._id:
+            self._id = str(ObjectId())
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.pet_name} - {self.status}"
