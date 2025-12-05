@@ -1,4 +1,4 @@
-a-- Create database for the project
+-- Create database for the project
 CREATE DATABASE IF NOT EXISTS pet_rescue
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
