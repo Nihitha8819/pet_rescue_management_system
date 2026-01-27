@@ -1,0 +1,161 @@
+.about-wrapper {
+  max-width: 1100px;
+  margin: 50px auto 70px;
+  padding: 0 20px;
+  font-family: system-ui,-apple-system,BlinkMacSystemFont,"Poppins",sans-serif;
+  color:#111827;
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 20% 10%,#eef2ff,transparent 40%),
+    radial-gradient(circle at 80% 20%,#f0f9ff,transparent 40%),
+    radial-gradient(circle at 50% 90%,#fafafa,transparent 40%),
+    linear-gradient(180deg,#fff,#f8fafc);
+}
+
+.about-wrapper::before,
+.about-wrapper::after{
+  content:"";
+  position:absolute;
+  width:320px;
+  height:320px;
+  border-radius:50%;
+  filter:blur(90px);
+  opacity:.35;
+  animation:floatBlob 16s infinite alternate ease-in-out;
+  z-index:-1;
+}
+
+.about-wrapper::before{background:#bfdbfe;top:-120px;left:-120px;}
+.about-wrapper::after{background:#c7d2fe;bottom:-140px;right:-140px;animation-delay:4s;}
+
+@keyframes floatBlob{from{transform:translateY(0)}to{transform:translateY(80px)}}
+
+.about-hero{
+  text-align:center;
+  margin-bottom:40px;
+  animation:fadeDown .8s ease forwards;
+  backdrop-filter:blur(6px);
+}
+
+.hero-badge{
+  display:inline-block;
+  padding:6px 14px;
+  border-radius:999px;
+  background:#eff6ff;
+  color:#1d4ed8;
+  font-size:.85rem;
+  margin-bottom:10px;
+}
+
+.about-hero h1{font-size:2.6rem;font-weight:700;margin-bottom:8px;line-height:1.15;}
+.about-tagline{color:#4b5563;margin-bottom:6px;}
+.about-intro{max-width:720px;margin:0 auto;color:#6b7280}
+
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:none}}
+
+.about-section{margin:48px 0;position:relative;padding-top:30px}
+.about-section h2{text-align:center;margin-bottom:22px}
+
+.about-section::before,
+.about-section::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  height:1px;
+  background:linear-gradient(to right,transparent,#c7d2fe,transparent);
+}
+
+.about-section::before{top:0;width:120px}
+.about-section::after{bottom:-30px;width:180px}
+
+.about-grid,
+.steps-grid,
+.features-columns,
+.team-contact{position:relative;padding-bottom:32px}
+
+.about-grid::after,
+.steps-grid::after,
+.features-columns::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:160px;
+  height:1px;
+  background:linear-gradient(to right,transparent,#c7d2fe,transparent);
+}
+
+.about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
+
+.about-card,
+.step-card,
+.feature-column,
+.team-block,
+.contact-block{
+  background:rgba(255,255,255,.75);
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 8px 18px rgba(15,23,42,.06);
+  backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.5);
+  transition:.2s;
+  opacity:0;
+  animation:fadeUp .7s ease forwards;
+}
+
+.about-card:hover,
+.step-card:hover,
+.feature-column:hover,
+.team-block:hover,
+.contact-block:hover{transform:translateY(-4px);box-shadow:0 12px 22px rgba(15,23,42,.1)}
+
+.about-card:nth-child(1),.step-card:nth-child(1){animation-delay:.1s}
+.about-card:nth-child(2),.step-card:nth-child(2){animation-delay:.2s}
+.about-card:nth-child(3),.step-card:nth-child(3){animation-delay:.3s}
+.about-card:nth-child(4),.step-card:nth-child(4){animation-delay:.4s}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}
+
+.step-card{text-align:center}
+
+.step-icon{
+  width:36px;height:36px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:#eff6ff;color:#1d4ed8;margin-bottom:12px;transition:.3s
+}
+
+.step-card:hover .step-icon{transform:rotate(10deg) scale(1.1)}
+
+.features-columns{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+
+.feature-column ul{padding-left:18px;margin:0}
+
+.chips-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+
+.chip{
+  padding:7px 14px;border-radius:999px;
+  background:#eff6ff;color:#1d4ed8;font-size:.85rem;transition:.2s
+}
+
+.chip:hover{transform:scale(1.05)}
+
+.impact{text-align:center;background:#f9fafb;border-radius:22px;padding:28px}
+
+.team-contact{display:grid;grid-template-columns:1.3fr 1fr;gap:26px}
+
+.contact-block ul{padding-left:18px}
+
+body.dark .about-wrapper{background:#020617;color:#e5e7eb}
+body.dark .about-card,body.dark .step-card,body.dark .feature-column,body.dark .team-block,body.dark .contact-block{background:rgba(15,23,42,.7)}
+body.dark .chip{background:rgba(30,58,138,.4);color:#bfdbfe}
+body.dark .hero-badge{background:rgba(30,58,138,.4);color:#bfdbfe}
+
+@media(max-width:768px){
+  .team-contact{grid-template-columns:1fr}
+  .about-hero h1{font-size:2.1rem}
+}

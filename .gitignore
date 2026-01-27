@@ -1,0 +1,23 @@
+# Node / React
+node_modules/
+
+# Environment
+.env
+venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Secrets / credentials
+credentials.json
+token.txt
+token.json
+backend/notifications/token.json
+
+# Database
+*.sqlite3
+
+# Logs / system
+*.log
+.DS_Store

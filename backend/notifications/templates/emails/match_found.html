@@ -1,0 +1,41 @@
+{% extends "emails/base.html" %}
+{% block content %}
+  <p>Hi {{ user_name }},</p>
+
+  <p><strong>Good news! Your pet might have been found. 🐾</strong></p>
+
+  <p>
+    Our AI-powered image matching system, verified by an admin, has detected a strong
+    similarity between your <strong>lost pet report</strong> and a <strong>found pet report</strong>.
+  </p>
+
+  <p>
+    <strong>Pet Name:</strong> {{ pet_name }}<br />
+    <strong>Reported Lost Location:</strong> {{ lost_location }}<br />
+    <strong>Matched Found Location:</strong> {{ found_location }}<br />
+    <strong>Similarity Score:</strong> {{ score|floatformat:2 }}
+  </p>
+
+  {% if finder_name %}
+  <p>
+    <strong>👤 Finder Contact Information:</strong><br />
+    <strong>Name:</strong> {{ finder_name }}<br />
+    <strong>Email:</strong> <a href="mailto:{{ finder_email }}">{{ finder_email }}</a><br />
+    <strong>Phone:</strong> {{ finder_phone }}
+  </p>
+  {% endif %}
+
+  <p>
+    Please contact the finder to arrange reunion. We're rooting for a happy reunion! 💛
+  </p>
+
+  <p>
+    We’re rooting for a happy reunion. 💛
+  </p>
+
+  <p>
+    Warm regards,<br />
+    <strong>The PetRescue Team</strong>
+  </p>
+{% endblock %}
+

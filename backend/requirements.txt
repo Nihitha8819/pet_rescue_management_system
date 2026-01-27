@@ -1,0 +1,10 @@
+Django==6.0
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+Pillow
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2
+opencv-python
+scikit-image
